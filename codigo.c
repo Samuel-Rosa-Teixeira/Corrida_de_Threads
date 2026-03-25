@@ -16,10 +16,9 @@ void barreira()
 {
     pthread_mutex_lock(&lock);  //Entra na região crítica
     contador++;
-    if(contador == num_threads) //Prepara o tiro
-    {
-        pthread_cond_broadcast(&cond); //Atira e acorda todo mundo pra largada
-    }
+    if(contador == num_threads)
+        pthread_cond_broadcast(&cond); //acorda todo mundo pra largada
+
     else
     {
         //Se os threads não chegarem, todo mundo dorme
@@ -28,11 +27,59 @@ void barreira()
             pthread_cond_wait(&cond, &lock);
         }
     }
+
     pthread_mutex_unlock(&lock); //Saí da região crítica
 }
 
-
-int main()
+void* corrida(void* arg)
 {
+    int id = *(int*)arg; //As ids das threads
+    barreira();
+    for(int i = 0; i < MAX; i++)
+        printf("Thread %d: %d\n", id, i);
+
+    //Que comecem os jogos \o/
+    pthread_mutex_lock(&lock);
+
+    if (camp == -1)
+    {
+        camp = id;
+        printf("\n Thread %d venceu!\n", id);
+    }
+
+    pthread_mutex_unlock(&lock);
+    
+    return NULL;
+}
+
+int main(int argc, char* argv[]) {
+
+    //Verifica se passaram as threads
+    if (argc < 2)
+    {
+        printf("Uso: %s <num_threads>\n", argv[0]);
+        return 1;
+    }
+
+    num_threads = atoi(argv[1]);
+    pthread_t threads[num_threads];
+    int ids[num_threads];
+
+    pthread_mutex_init(&lock, NULL);
+    pthread_cond_init(&cond, NULL);
+
+    for (int i = 0; i < num_threads; i++)
+    {
+        ids[i] = i + 1;
+        pthread_create(&threads[i], NULL, corrida, &ids[i]);
+    }
+
+    //A corrida
+    for (int i = 0; i < num_threads; i++)
+        pthread_join(threads[i], NULL);
+
+    pthread_mutex_destroy(&lock);
+    pthread_cond_destroy(&cond);
+
     return 0;
 }
