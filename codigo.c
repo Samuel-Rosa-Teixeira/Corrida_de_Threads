@@ -48,7 +48,6 @@ void* run_cond(void* arg)
     }
 
     pthread_mutex_unlock(&lock);
-    count;
     return NULL;
 }
 
