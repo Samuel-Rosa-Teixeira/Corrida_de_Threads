@@ -5,7 +5,7 @@
 #define MAX 100
 
 int num_threads;
-int contador = 0;
+int count = 0;
 
 pthread_mutex_t lock;
 pthread_cond_t cond;
@@ -41,14 +41,14 @@ void* run_cond(void* arg)
     //Que comecem os jogos \o/
     pthread_mutex_lock(&lock);
 
-    if (camp == -1)
+    if (champ == -1)
     {
-        camp = id;
+        champ = id;
         printf("\n Thread %d venceu!\n", id);
     }
 
     pthread_mutex_unlock(&lock);
-    
+    count;
     return NULL;
 }
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     if (argc < 2)
     {
         printf("Uso: %s <num_threads>\n", argv[0]);
-        return 1;wall
+        return 1;
     }
 
     num_threads = atoi(argv[1]);
